@@ -1,6 +1,6 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import { videos } from "../../assets/data";
+import { videos, videos2, videos3 } from "../../assets/data";
 
 const { height, width } = Dimensions.get("window");
 
@@ -37,6 +37,17 @@ const VideoWrapper = ({ data }: VideoWrapper) => {
 
 export default function HomeScreen() {
   const [allVideos, setAllVideos] = useState(videos);
+
+  const numOfRefreshes = useRef(0);
+
+  const fetchMoreData = () => {
+    if (numOfRefreshes.current === 0) {
+      setAllVideos([...allVideos, ...videos2]);
+    } else if (numOfRefreshes.current === 1) {
+      setAllVideos([...allVideos, ...videos3]);
+    }
+    numOfRefreshes.current += 1;
+  };
   return (
     <View style={{ flex: 1, backgroundColor: "yellow" }}>
       <FlatList
@@ -46,6 +57,8 @@ export default function HomeScreen() {
         snapToAlignment="center"
         decelerationRate="fast"
         pagingEnabled
+        onEndReachedThreshold={0.3}
+        onEndReached={fetchMoreData}
         showsVerticalScrollIndicator={false}
         renderItem={(data) => <VideoWrapper data={data} />}
       />
